@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>กระจายตัวเลขที่ดึงดูด</title>
+  <style>
+    body {
+      font-family: 'Prompt', sans-serif;
+      background: linear-gradient(to right, #e0f7fa, #f1f8e9);
+      padding: 40px 20px;
+      max-width: 600px;
+      margin: auto;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      color: #009688;
+    }
+
+    .section {
+      margin-bottom: 30px;
+    }
+
+    label {
+      font-weight: bold;
+      font-size: 16px;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    input[type="text"] {
+      font-size: 24px;
+      padding: 10px;
+      width: 60px;
+      text-align: center;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+    }
+
+    button {
+      padding: 12px 20px;
+      font-size: 16px;
+      margin-top: 20px;
+      background-color: #009688;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #00796b;
+    }
+
+    #result {
+      margin-top: 20px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      box-shadow: 2px 2px 6px rgba(0,0,0,0.05);
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    .download {
+      margin-top: 10px;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎯 กระจายตัวเลขที่ดึงดูด</h1>
+
+  <div class="section">
+    <label>🔢 ตัวเลขที่ดึงดูด (3 หลัก):</label>
+    <div class="input-group">
+      <input type="text" id="input1" maxlength="1">
+      <input type="text" id="input2" maxlength="1">
+      <input type="text" id="input3" maxlength="1">
+    </div>
+  </div>
+
+  <button onclick="generateCombinations()">📍 กระจายเลข</button>
+
+  <div id="result" class="section" style="display:none;">
+    <strong>🧩 ตัวเลขที่ถูกกระจาย:</strong>
+    <ul id="outputList"></ul>
+    <button class="download" onclick="downloadResult()">💾 ดาวน์โหลดเป็น .txt</button>
+  </div>
+
+  <script>
+    const mapping = {
+      '0': ['0'],
+      '1': ['1', '7'],
+      '2': ['2'],
+      '3': ['3', '8'],
+      '4': ['4', '5'],
+      '5': ['5'],
+      '6': ['6', '9'],
+      '7': ['1', '7'],
+      '8': ['3', '8'],
+      '9': ['6', '9']
+    };
+
+    let lastResults = [];
+
+    function generateCombinations() {
+      const d1 = document.getElementById("input1").value.trim();
+      const d2 = document.getElementById("input2").value.trim();
+      const d3 = document.getElementById("input3").value.trim();
+
+      const list1 = mapping[d1] || [];
+      const list2 = mapping[d2] || [];
+      const list3 = mapping[d3] || [];
+
+      const results = [];
+
+      for (let a of list1) {
+        for (let b of list2) {
+          for (let c of list3) {
+            results.push(a + b + c);
+          }
+        }
+      }
+
+      const resultDiv = document.getElementById("result");
+      const outputList = document.getElementById("outputList");
+      outputList.innerHTML = "";
+
+      if (results.length > 0) {
+        results.forEach(item => {
+          const li = document.createElement("li");
+          li.textContent = item;
+          outputList.appendChild(li);
+        });
+        resultDiv.style.display = "block";
+      } else {
+        resultDiv.style.display = "none";
+        alert("กรุณากรอกตัวเลขให้ถูกต้อง (0-9)");
+      }
+
+      lastResults = results;
+    }
+
+    function downloadResult() {
+      if (lastResults.length === 0) {
+        alert("ยังไม่มีผลลัพธ์ให้ดาวน์โหลด กรุณากดปุ่มกระจายเลขก่อน");
+        return;
+      }
+
+      const text = lastResults.join("\n");
+      const blob = new Blob([text], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "ตัวเลขที่ถูกกระจาย.txt";
+      a.click();
+
+      URL.revokeObjectURL(url);
+    }
+  </script>
+
+</body>
+</html>
